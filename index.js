@@ -1,5 +1,5 @@
 /**
- * @typedef Party
+ * @typedef Event
  * @property {number} id
  * @property {string} name
  * @property {string} description
@@ -21,7 +21,7 @@ let selectedEvent;
 async function getEvents() {
   try {
     const response = await fetch(API);
-    const result = response.json();
+    const result = await response.json();
     events = result.data;
     render();
   } catch (error) {
@@ -29,7 +29,7 @@ async function getEvents() {
   }
 }
 
-/** Updates state with a single artist from the API */
+/** Updates state with a single event from the API */
 async function getEvent(id) {
   try {
     const response = await fetch(API + "/" + id);
@@ -48,10 +48,11 @@ function EventListItem(event) {
   const $card = document.createElement("li");
   $card.classList.add("eventCard");
   $card.innerHTML = `
-    <a href="#selected">${event.name}</a>`;
+    <a href="#selected">${event.name}</a>
+    `;
 
   $card.addEventListener("click", (event) => {
-    getArtist(artist.id);
+    getEvent(event.id);
   });
 
   return $card;
@@ -63,4 +64,51 @@ function EventList() {
   $list.classList.add("lineup");
   const $cards = events.map(EventListItem);
   $list.replaceChildren(...$cards);
+
+  return $list;
 }
+
+/** Detailed information about a specific event */
+function EventDetails() {
+  if (!selectedEvent) {
+    const $p = document.createElement("p");
+    $p.textContent = "Please select an event to see its details.";
+    return $p;
+  }
+
+  const $event = document.createElement("section");
+  $event.classList.add("event");
+  $event.innerHTML = `
+  <h3>${selectedEvent.name} #${selectedEvent.id}</h3>
+  <p>${selectedEvent.description}</p>
+  <p>${selectedEvent.date}, ${selectedEvent.location}</p>
+  `;
+
+  return $event;
+}
+
+// === Render ===
+function render() {
+  const $app = document.querySelector("#app");
+  $app.innerHTML = `
+    <h1>Fullstack Events</h1>
+    <main>
+        <section>
+            <h2>Current Lineup</h2>
+            <EventList></EventList>
+        </section>
+        <section id="selected">
+            <h2>Event Details</h2>
+            <EventDetails></EventDetails>
+        </section>
+    </main`;
+  $app.querySelector("EventList").replaceWith(EventList());
+  $app.querySelector("EventDetails").replaceWith(EventDetails());
+}
+
+async function init() {
+  await getEvents();
+  render();
+}
+
+init();
