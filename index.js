@@ -9,7 +9,7 @@
 
 // === Constants ===
 const BASE = "https://fsa-crud-2aa9294fe819.herokuapp.com/api/";
-const COHORT = "2412-FTB-ET-WEB-AM";
+const COHORT = "/2412AM";
 const RESOURCE = "/events";
 const API = BASE + COHORT + RESOURCE;
 
@@ -51,7 +51,7 @@ function EventListItem(event) {
     <a href="#selected">${event.name}</a>
     `;
 
-  $card.addEventListener("click", (event) => {
+  $card.addEventListener("click", () => {
     getEvent(event.id);
   });
 
